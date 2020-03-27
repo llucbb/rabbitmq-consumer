@@ -1,1 +1,1 @@
-#RabbitMQ producer
+#RabbitMQ consumer
