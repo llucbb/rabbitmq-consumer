@@ -14,7 +14,7 @@ public class MyPictureImageConsumerService {
 
     private final ObjectMapper objectMapper = new ObjectMapper();
 
-    @RabbitListener(queues = "q.mypicture.image")
+    //@RabbitListener(queues = "q.mypicture.image")
     public void listen(String message) throws JsonProcessingException {
         var p = objectMapper.readValue(message, Picture.class);
 
