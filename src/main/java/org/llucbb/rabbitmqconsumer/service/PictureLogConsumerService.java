@@ -9,14 +9,14 @@ import org.springframework.stereotype.Service;
 
 @Service
 @Slf4j
-public class PictureImageConsumerService {
+public class PictureLogConsumerService {
 
     private final ObjectMapper objectMapper = new ObjectMapper();
 
-    @RabbitListener(queues = "q.picture.image")
+    @RabbitListener(queues = "q.picture.log")
     public void listen(String message) throws JsonProcessingException {
         var p = objectMapper.readValue(message, Picture.class);
-        log.info("On image : {}", p.toString());
+        log.info("On log : {}", p.toString());
 
     }
 }

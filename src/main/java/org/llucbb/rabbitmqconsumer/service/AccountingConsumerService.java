@@ -11,7 +11,7 @@ import org.springframework.stereotype.Service;
 @Slf4j
 public class AccountingConsumerService {
 
-    private ObjectMapper objectMapper = new ObjectMapper();
+    private final ObjectMapper objectMapper = new ObjectMapper();
 
     @RabbitListener(queues = "q.hr.accounting")
     public void listen(String message) {
