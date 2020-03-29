@@ -6,6 +6,8 @@ https://www.udemy.com/course/rabbitmq-java-spring-boot-for-system-integration
 
 **Reference:**
 
+https://spring.io/projects/spring-amqp
+
 https://spring.io/guides/gs/messaging-rabbitmq/
 
 https://www.rabbitmq.com/
