@@ -17,7 +17,7 @@ public class RetryMarketingConsumerService {
     private final ObjectMapper objectMapper;
 
     public RetryMarketingConsumerService() {
-        this.objectMapper = new ObjectMapper();
+        objectMapper = new ObjectMapper();
     }
 
     @RabbitListener(queues = "q.guideline2.marketing.work", ackMode = "MANUAL")

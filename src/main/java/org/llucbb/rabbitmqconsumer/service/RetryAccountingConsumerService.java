@@ -6,6 +6,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.llucbb.rabbitmqconsumer.model.Employee;
 import org.llucbb.rabbitmqconsumer.rabbitmq.DlxFanoutProcessingErrorHandler;
+import org.llucbb.rabbitmqconsumer.rabbitmq.DlxProcessingErrorHandler;
 import org.springframework.amqp.core.Message;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.stereotype.Service;
@@ -19,12 +20,12 @@ public class RetryAccountingConsumerService {
     private static final String DEAD_EXCHANGE_NAME = "x.guideline2.dead";
     private static final String ROUTING_KEY = "accounting";
 
-    private final DlxFanoutProcessingErrorHandler dlxFanoutProcessingErrorHandler;
+    private final DlxProcessingErrorHandler dlxFanoutProcessingErrorHandler;
     private final ObjectMapper objectMapper;
 
     public RetryAccountingConsumerService() {
-        this.objectMapper = new ObjectMapper();
-        this.dlxFanoutProcessingErrorHandler = new DlxFanoutProcessingErrorHandler(DEAD_EXCHANGE_NAME, ROUTING_KEY);
+        objectMapper = new ObjectMapper();
+        dlxFanoutProcessingErrorHandler = new DlxFanoutProcessingErrorHandler(DEAD_EXCHANGE_NAME, ROUTING_KEY);
     }
 
     @RabbitListener(queues = "q.guideline2.accounting.work", ackMode = "MANUAL")

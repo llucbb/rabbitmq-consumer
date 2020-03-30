@@ -15,13 +15,10 @@ import java.util.Date;
  */
 @Slf4j
 @Getter
-public class DlxFanoutProcessingErrorHandler implements DlxProcessingErrorHandler {
+public class DlxDirectProcessingErrorHandler implements DlxProcessingErrorHandler {
 
     @NonNull
     private final String deadExchangeName;
-
-    @NonNull
-    private final String routingKey;
 
     private final int maxRetryCount = 3;
 
@@ -31,16 +28,13 @@ public class DlxFanoutProcessingErrorHandler implements DlxProcessingErrorHandle
      *
      * @param deadExchangeName dead exchange name. Not a dlx for work queue, but exchange name for really dead message
      *                         (wont processed anymore).
-     * @param routingKey       dead letter routing key
      * @throws IllegalArgumentException if <code>dlxExchangeName</code> or <code>dlxRoutingKey</code> is null or empty.
      */
-    public DlxFanoutProcessingErrorHandler(String deadExchangeName, String routingKey) throws IllegalArgumentException {
-        if (StringUtils.isAnyEmpty(deadExchangeName, routingKey)) {
-            throw new IllegalArgumentException("Must define dlx exchange name and routing key");
+    public DlxDirectProcessingErrorHandler(String deadExchangeName) throws IllegalArgumentException {
+        if (StringUtils.isEmpty(deadExchangeName)) {
+            throw new IllegalArgumentException("Must define dlx exchange name");
         }
-
         this.deadExchangeName = deadExchangeName;
-        this.routingKey = routingKey;
     }
 
     /**
@@ -62,7 +56,8 @@ public class DlxFanoutProcessingErrorHandler implements DlxProcessingErrorHandle
                 log.warn("[DEAD] Error at " + new Date() + " on retry " + rabbitMqHeader.getFailedRetryCount()
                         + " for message " + message);
 
-                channel.basicPublish(getDeadExchangeName(), getRoutingKey(), null, message.getBody());
+                channel.basicPublish(getDeadExchangeName(), message.getMessageProperties().getReceivedRoutingKey(),
+                        null, message.getBody());
                 channel.basicAck(message.getMessageProperties().getDeliveryTag(), false);
             } else {
                 log.warn("[REQUEUE] Error at " + new Date() + " on retry " + rabbitMqHeader.getFailedRetryCount()

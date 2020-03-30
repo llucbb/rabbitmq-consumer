@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.rabbitmq.client.Channel;
 import lombok.extern.slf4j.Slf4j;
 import org.llucbb.rabbitmqconsumer.model.Picture;
+import org.llucbb.rabbitmqconsumer.rabbitmq.DlxDirectProcessingErrorHandler;
 import org.llucbb.rabbitmqconsumer.rabbitmq.DlxProcessingErrorHandler;
 import org.springframework.amqp.core.Message;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
@@ -17,12 +18,12 @@ public class RetryImageConsumer {
 
     private static final String DEAD_EXCHANGE_NAME = "x.guideline.dead";
 
-    private final DlxProcessingErrorHandler dlxProcessingErrorHandler;
+    private final DlxProcessingErrorHandler dlxDirectProcessingErrorHandler;
     private final ObjectMapper objectMapper;
 
     public RetryImageConsumer() {
-        this.objectMapper = new ObjectMapper();
-        this.dlxProcessingErrorHandler = new DlxProcessingErrorHandler(DEAD_EXCHANGE_NAME);
+        objectMapper = new ObjectMapper();
+        dlxDirectProcessingErrorHandler = new DlxDirectProcessingErrorHandler(DEAD_EXCHANGE_NAME);
     }
 
     @RabbitListener(queues = "q.guideline.image.work", ackMode = "MANUAL")
@@ -40,7 +41,7 @@ public class RetryImageConsumer {
             }
         } catch (IOException e) {
             log.warn("Error processing message : " + new String(message.getBody()) + " : " + e.getMessage());
-            dlxProcessingErrorHandler.handleErrorProcessingMessage(message, channel);
+            dlxDirectProcessingErrorHandler.handleErrorProcessingMessage(message, channel);
         }
     }
 }
