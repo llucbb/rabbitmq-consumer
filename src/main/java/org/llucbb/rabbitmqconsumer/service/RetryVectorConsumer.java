@@ -25,7 +25,7 @@ public class RetryVectorConsumer {
         this.dlxProcessingErrorHandler = new DlxProcessingErrorHandler(DEAD_EXCHANGE_NAME);
     }
 
-    @RabbitListener(queues = "q.guideline.vector.work")
+    @RabbitListener(queues = "q.guideline.vector.work", ackMode = "MANUAL")
     public void listen(Message message, Channel channel) {
         try {
             var p = objectMapper.readValue(message.getBody(), Picture.class);

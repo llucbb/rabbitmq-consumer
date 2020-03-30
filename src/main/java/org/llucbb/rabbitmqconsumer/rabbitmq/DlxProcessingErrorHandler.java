@@ -4,7 +4,6 @@ import com.rabbitmq.client.Channel;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-import org.llucbb.rabbitmqconsumer.rabbitmq.RabbitmqHeader;
 import org.springframework.amqp.core.Message;
 import org.springframework.lang.NonNull;
 
@@ -57,8 +56,7 @@ public class DlxProcessingErrorHandler {
     private int maxRetryCount = 3;
 
     /**
-     * Constructor. Will retry for n times (default is 3) and on the next retry will consider message as dead, put
-     * it on
+     * Constructor. Will retry for n times (default is 3) and on the next retry will consider message as dead, put it on
      * dead exchange with given
      * <code>dlxExchangeName</code> and <code>routingKey</code>
      *
@@ -68,18 +66,14 @@ public class DlxProcessingErrorHandler {
      *                                  <code>dlxRoutingKey</code> is null or empty.
      */
     public DlxProcessingErrorHandler(String deadExchangeName) throws IllegalArgumentException {
-        super();
-
-        if (StringUtils.isAnyEmpty(deadExchangeName)) {
+        if (StringUtils.isEmpty(deadExchangeName)) {
             throw new IllegalArgumentException("Must define dlx exchange name");
         }
-
         this.deadExchangeName = deadExchangeName;
     }
 
     /**
-     * Constructor. Will retry for <code>maxRetryCount</code> times and on the next retry will consider message as
-     * dead,
+     * Constructor. Will retry for <code>maxRetryCount</code> times and on the next retry will consider message as dead,
      * put it on dead exchange with given
      * <code>dlxExchangeName</code> and <code>routingKey</code>
      *
@@ -117,26 +111,24 @@ public class DlxProcessingErrorHandler {
                         null, message.getBody());
                 channel.basicAck(message.getMessageProperties().getDeliveryTag(), false);
             } else {
-                log.debug("[REQUEUE] Error at " + new Date() + " on retry " + rabbitMqHeader.getFailedRetryCount()
+                log.warn("[REQUEUE] Error at " + new Date() + " on retry " + rabbitMqHeader.getFailedRetryCount()
                         + " for message " + message);
 
                 channel.basicReject(message.getMessageProperties().getDeliveryTag(), false);
             }
             return true;
+
         } catch (IOException e) {
-            log.warn("[HANDLER-FAILED] Error at " + new Date() + " on retry " + rabbitMqHeader.getFailedRetryCount()
+            log.error("[HANDLER-FAILED] Error at " + new Date() + " on retry " + rabbitMqHeader.getFailedRetryCount()
                     + " for message " + message);
         }
-
         return false;
     }
 
     public void setMaxRetryCount(int maxRetryCount) throws IllegalArgumentException {
-        if (maxRetryCount > 1000) {
+        if (maxRetryCount > 100) {
             throw new IllegalArgumentException("max retry must between 0-1000");
         }
-
         this.maxRetryCount = maxRetryCount;
     }
-
 }
