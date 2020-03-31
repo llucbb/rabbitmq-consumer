@@ -4,3 +4,16 @@ spring:
     port: 5672
     username: guest
     password: vfWxy33zDGmZzxJ
+    listener:
+      simple:
+        retry:
+          # Whether or not publishing retries are enabled
+          enabled: true
+          # Duration between the first and second attempt to deliver a message
+          initial-interval: 3s
+          # Maximum duration between attempts
+          max-interval: 10s
+          # Maximum number of attempts to deliver a message
+          max-attempts: 5
+          # Multiplier to apply to the previous retry interval
+          multiplier: 2
